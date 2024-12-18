@@ -19,15 +19,29 @@ def main():
     with open(filename) as file:
         file_contents = file.read()
 
+    error = False
+
     if file_contents:
         for c in file_contents:
             token_type = tokens.get_token_type(c)
             if token_type:
                 print(f"{token_type} {c} null")
             else:
-                print(f"Unknown token: {c}", file=sys.stderr)
+                error = True
+                line_number = file_contents.count("\n", 0, file_contents.index(c)) + 1
+                # print(
+                #     "[line %s] Error: Unexpected character: %s" %(line_number, c),
+                #     file = sys.stderr
+                # )
+                print(
+                    f"[line {line_number}] Error: Unexpected character: {c}",
+                    file = sys.stderr
+                )
     print("EOF  null")
-
+    if error:
+        exit(65)
+    else:
+        exit(0)
 
 
 if __name__ == "__main__":
