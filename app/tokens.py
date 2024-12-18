@@ -10,6 +10,8 @@ TOKEN_MAP = {
     "-": "MINUS",
     ";": "SEMICOLON",
     "/": "SLASH",
+    "=": "EQUAL",
+    "==": "EQUAL_EQUAL",
 }
 
 def get_token_type(token):
