@@ -1,5 +1,5 @@
 import sys
-
+from . import tokens
 
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -21,10 +21,11 @@ def main():
 
     if file_contents:
         for c in file_contents:
-            if c == "(":
-                print("LEFT_PAREN ( null")
-            elif c == ")":
-                print("RIGHT_PAREN ) null")
+            token_type = tokens.get_token_type(c)
+            if token_type:
+                print(f"{token_type} {c} null")
+            else:
+                print(f"Unknown token: {c}", file=sys.stderr)
     print("EOF  null")
 
 
