@@ -14,6 +14,10 @@ TOKEN_MAP = {
     "==": "EQUAL_EQUAL",
     "!": "BANG",
     "!=": "BANG_EQUAL",
+    "<": "LESS",
+    "<=": "LESS_EQUAL",
+    ">": "GREATER",
+    ">=": "GREATER_EQUAL",
 }
 
 def get_token_type(token):
