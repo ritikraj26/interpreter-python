@@ -12,6 +12,8 @@ TOKEN_MAP = {
     "/": "SLASH",
     "=": "EQUAL",
     "==": "EQUAL_EQUAL",
+    "!": "BANG",
+    "!=": "BANG_EQUAL",
 }
 
 def get_token_type(token):
