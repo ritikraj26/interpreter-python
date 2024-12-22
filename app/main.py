@@ -21,19 +21,6 @@ def main():
 
     error = False
 
-    # if file_contents:
-    #     for c in file_contents:
-    #         token_type = tokens.get_token_type(c)
-    #         if token_type:
-    #             print(f"{token_type} {c} null")
-    #         else:
-    #             error = True
-    #             line_number = file_contents.count("\n", 0, file_contents.index(c)) + 1
-    #             print(
-    #                 f"[line {line_number}] Error: Unexpected character: {c}",
-    #                 file = sys.stderr
-    #             )
-
     if file_contents:
         file_length = len(file_contents)
         i = 0
@@ -43,6 +30,12 @@ def main():
                 i += 1
                 continue
             cc = file_contents[i:i+2] if i + 1 < file_length else None
+            # check for comment
+            if cc == "//":
+                i += 2
+                while i < file_length and file_contents[i] != "\n":
+                    i += 1
+                continue
             if cc and cc in tokens.TOKEN_MAP:
                 print(f"{tokens.TOKEN_MAP[cc]} {cc} null")
                 i += 2

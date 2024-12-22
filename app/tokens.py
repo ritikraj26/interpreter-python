@@ -18,6 +18,8 @@ TOKEN_MAP = {
     "<=": "LESS_EQUAL",
     ">": "GREATER",
     ">=": "GREATER_EQUAL",
+    "/": "SLASH",
+    "//": "COMMENT",
 }
 
 def get_token_type(token):
