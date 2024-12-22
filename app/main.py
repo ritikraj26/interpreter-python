@@ -36,6 +36,23 @@ def main():
                 while i < file_length and file_contents[i] != "\n":
                     i += 1
                 continue
+            if c == "\"":
+                i += 1
+                value = ""
+                while i < file_length and file_contents[i] != "\"":
+                    value += file_contents[i]
+                    i += 1
+                if i == file_length:
+                    error = True
+                    line_number = file_contents.count("\n", 0, i) + 1
+                    print(
+                        f"[line {line_number}] Error: Unterminated string.",
+                        file = sys.stderr
+                    )
+                else:
+                    print(f"""STRING "{value}" {value}""")
+                    i += 1
+                continue
             if cc and cc in tokens.TOKEN_MAP:
                 print(f"{tokens.TOKEN_MAP[cc]} {cc} null")
                 i += 2
