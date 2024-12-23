@@ -1,5 +1,45 @@
 import sys
 from . import tokens
+import enum
+from typing import Any
+
+
+class TokenType(enum.Enum):
+    LEFT_PAREN = "LEFT_PAREN"
+    RIGHT_PAREN = "RIGHT_PAREN"
+    LEFT_BRACE = "LEFT_BRACE"
+    RIGHT_BRACE = "RIGHT_BRACE"
+    STAR = "STAR"
+    DOT = "DOT"
+    COMMA = "COMMA"
+    PLUS = "PLUS"
+    MINUS = "MINUS"
+    SEMICOLON = "SEMICOLON"
+    SLASH = "SLASH"
+    EQUAL = "EQUAL"
+    EQUAL_EQUAL = "EQUAL_EQUAL"
+    BANG = "BANG"
+    BANG_EQUAL = "BANG_EQUAL"
+    LESS = "LESS"
+    LESS_EQUAL = "LESS_EQUAL"
+    GREATER = "GREATER"
+    GREATER_EQUAL = "GREATER_EQUAL"
+    STRING = "STRING"
+    NUMBER = "NUMBER"
+    EOF = "EOF"
+
+
+class Token:
+    def __init__(self, type: TokenType, lexeme: str, literal: Any | None, line: int) -> None:
+        self.type = type
+        self.lexeme = lexeme
+        self.literal = literal
+        self.line = line
+
+    def __str__(self) -> str:
+        return f"{self.type} {self.lexeme} {self.literal}"
+
+
 
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
