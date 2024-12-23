@@ -1,6 +1,6 @@
 import sys
-from . import tokens
 import enum
+# import pathlib
 from typing import Any
 
 
@@ -36,7 +36,8 @@ class Token:
         self.line = line
 
     def __str__(self) -> str:
-        return f"{self.type} {self.lexeme} {self.literal}"
+        literal_str = "null" if self.literal is None else str(self.literal)
+        return f"{self.type.value} {self.lexeme} {literal_str}"
 
 class Scanner:
     def __init__(self, source: str) -> None:
@@ -93,14 +94,17 @@ class Scanner:
                         self.advance()
                 else:
                     self.add_token(TokenType.SLASH)
-            case " ", "\r", "\t":
+            case " " | "\r" | "\t":
                 pass
             case "\n":
                 self.line += 1
             case "\"":
                 self.string()
             case _:
-                self.error(f"Unexpected character: {char}")
+                if self.is_digit(char):
+                    self.number()
+                else:
+                    self.error(f"Unexpected character: {char}")
 
     def advance(self) -> str:
         self.current += 1
@@ -114,6 +118,11 @@ class Scanner:
         if self.is_at_end():
             return "\0"
         return self.source[self.current]
+
+    def peek_next(self) -> str:
+        if self.current + 1 >= len(self.source):
+            return "\0"
+        return self.source[self.current + 1]
 
     def match(self, expected: str) -> bool:
         if self.is_at_end():
@@ -138,14 +147,26 @@ class Scanner:
         value = self.source[self.start + 1:self.current - 1]
         self.add_token(TokenType.STRING, value)
 
+    def is_digit(self, char: str) -> bool:
+        return char >= "0" and char <= "9"
+
+    def number(self) -> None:
+        while self.is_digit(self.peek()):
+            self.advance()
+
+        if self.peek() == "." and self.is_digit(self.peek_next()):
+            self.advance()
+
+        while self.is_digit(self.peek()):
+            self.advance()
+
+        self.add_token(TokenType.NUMBER, float(self.source[self.start:self.current]))
+
     def error(self, message: str) -> None:
         self.errors.append(f"[line {self.line}] Error: {message}")
 
 
-
-
-def main():
-    # You can use print statements as follows for debugging, they'll be visible when running tests.
+def main() -> None:
     print("Program logs appear here!", file=sys.stderr)
 
     if len(sys.argv) < 3:
@@ -162,58 +183,17 @@ def main():
     with open(filename) as file:
         file_contents = file.read()
 
-    error = False
+    # file_contents = pathlib.Path(filename).read_text()
+    scanner = Scanner(file_contents)
+    tokens, errors = scanner.scan_tokens()
 
-    if file_contents:
-        file_length = len(file_contents)
-        i = 0
-        while i < file_length:
-            c = file_contents[i]
-            if c == " " or c == "\t" or c == "\n":
-                i += 1
-                continue
-            cc = file_contents[i:i+2] if i + 1 < file_length else None
-            # check for comment
-            if cc == "//":
-                i += 2
-                while i < file_length and file_contents[i] != "\n":
-                    i += 1
-                continue
-            if c == "\"":
-                i += 1
-                value = ""
-                while i < file_length and file_contents[i] != "\"":
-                    value += file_contents[i]
-                    i += 1
-                if i == file_length:
-                    error = True
-                    line_number = file_contents.count("\n", 0, i) + 1
-                    print(
-                        f"[line {line_number}] Error: Unterminated string.",
-                        file = sys.stderr
-                    )
-                else:
-                    print(f"""STRING "{value}" {value}""")
-                    i += 1
-                continue
-            if cc and cc in tokens.TOKEN_MAP:
-                print(f"{tokens.TOKEN_MAP[cc]} {cc} null")
-                i += 2
-                continue
-            if c in tokens.TOKEN_MAP:
-                print(f"{tokens.TOKEN_MAP[c]} {c} null")
-                i += 1
-            else:
-                error = True
-                line_number = file_contents.count("\n", 0, i) + 1
-                print(
-                    f"[line {line_number}] Error: Unexpected character: {c}",
-                    file = sys.stderr
-                )
-                i += 1
 
-    print("EOF  null")
-    if error:
+    for token in tokens:
+        print(token)
+    for error in errors:
+        print(error, file=sys.stderr)
+
+    if errors:
         exit(65)
     else:
         exit(0)
